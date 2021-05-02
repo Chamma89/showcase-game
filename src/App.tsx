@@ -1,42 +1,21 @@
 import "./App.css";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { LIST_COUNTRIES } from "./graphql/Queries";
+import CountryCard from "./components/CountryCard";
 
-const LIST_COUNTRIES = gql`
-  {
-    countries {
-      name
-      code
-      emoji
-    }
-  }
-`;
-interface Props {
-  name: string;
-  code: string;
-  emoji: string;
-}
-
-function CountriesList() {
+function App() {
   const { loading, error, data } = useQuery(LIST_COUNTRIES);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
   console.log(data);
 
-  return data.countries.map(({ name, code, emoji }: Props) => (
-    <div key={name}>
-      <p>
-        {emoji} {name}: {code}
-      </p>
-    </div>
-  ));
-}
-
-function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <CountriesList />
+        <CountryCard name="Card un" />
+        <CountryCard name="Card deux" />
       </header>
     </div>
   );
