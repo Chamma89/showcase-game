@@ -7,6 +7,9 @@ export const LIST_COUNTRIES = gql`
       capital
       code
       emoji
+      continent {
+        name
+      }
       languages {
         name
       }
