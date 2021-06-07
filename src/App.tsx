@@ -3,20 +3,26 @@ import { useQuery, useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { LIST_COUNTRIES } from "./graphql/Queries";
 import CountryCard from "./components/CountryCard";
-import { Continent } from "./components/CountryCard";
-import { count } from "node:console";
 import styled from "styled-components";
 
-interface Country {
+interface Continent {
+  name: string;
+}
+export interface CountryProps {
   name: string;
   capital: string;
-  code: string;
+  code?: string;
   emoji: string;
   continent: Continent;
+  chosenCountry: string;
+  playerScore: number;
+  selectThreeCountries: Function;
+  updateScore: Function;
+  resetGame: Function;
 }
 
 const StyledQuestion = styled.div`
-  display: flex;
+  display: block;
   flex-direction: column;
 
   span {
@@ -30,32 +36,55 @@ const StyledCards = styled.div`
 `;
 
 function App() {
-  const [randomCountries, setRandomCountries] = useState<Country[]>([]);
-  const [chosenCountry, setChosenCountry] = useState<String>("");
+  const [countries, setCountries] = useState<CountryProps[]>([]);
+  const [randomCountriesList, setRandomCountriesList] = useState<
+    CountryProps[]
+  >([]);
+  const [chosenCountry, setChosenCountry] = useState<string>("");
+  const [threeCountries, setThreeCountries] = useState<CountryProps[]>([]);
+
+  const [playerScore, setPlayerScore] = useState<number>(0);
+
   const { loading, error, data } = useQuery(LIST_COUNTRIES, {
     onCompleted: (data) => {
-      console.log("data loaded");
-      // setRandomCountries(data)
+      setCountries(data.countries);
     },
   });
-  // const [addTodo] = useMutation(ADD_COUNTRY);
 
   useEffect(() => {
     if (data) {
-      var arr = [];
-      while (arr.length < 3) {
-        var r = Math.floor(Math.random() * 250) + 1;
-        if (arr.indexOf(r) === -1) arr.push(data.countries[r]);
-      }
-      setRandomCountries(arr);
-      setChosenCountry(arr[0].emoji);
+      let randomizedCountries = [...countries];
+
+      randomizedCountries = randomizedCountries.sort(() => Math.random() - 0.5);
+
+      setRandomCountriesList(randomizedCountries);
     }
-  }, [data]);
+  }, [countries]);
+
+  useEffect(() => {
+    selectThreeCountries();
+  }, [randomCountriesList]);
+
+  const selectThreeCountries = () => {
+    setThreeCountries(randomCountriesList.splice(0, 3));
+  };
+
+  useEffect(() => {
+    if (threeCountries.length > 0) {
+      setChosenCountry(threeCountries.sort(() => Math.random() - 0.5)[0].emoji);
+    }
+  }, [threeCountries]);
+
+  const addToPlayerScore = () => {
+    setPlayerScore((prevScore) => prevScore + 1);
+  };
+
+  const resetGame = () => {
+    setPlayerScore(0);
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
-  console.log(data);
-  console.log(randomCountries);
 
   return (
     <div className="App">
@@ -69,15 +98,24 @@ function App() {
               <span>{chosenCountry}</span>
             </StyledQuestion>
             <StyledCards>
-              {randomCountries.map((country) => (
-                <CountryCard
-                  key={country.code}
-                  name={country.name}
-                  continent={country.continent}
-                  capital={country.capital}
-                />
-              ))}
+              {threeCountries
+                .sort(() => Math.random() - 0.5)
+                .map((country) => (
+                  <CountryCard
+                    key={country.code}
+                    name={country.name}
+                    capital={country.capital}
+                    chosenCountry={chosenCountry}
+                    continent={country.continent}
+                    emoji={country.emoji}
+                    playerScore={playerScore}
+                    resetGame={resetGame}
+                    selectThreeCountries={selectThreeCountries}
+                    updateScore={addToPlayerScore}
+                  />
+                ))}
             </StyledCards>
+            <h1>Current score: {playerScore}</h1>
           </div>
         )}
       </header>

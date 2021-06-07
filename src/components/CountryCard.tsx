@@ -1,15 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-
-export interface Continent {
-  name: string;
-}
-
-interface Props {
-  name: string;
-  capital: string;
-  continent: Continent;
-}
+import { CountryProps } from "../App";
 
 const StyledCountryCard = styled.div`
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -19,11 +10,34 @@ const StyledCountryCard = styled.div`
   width: 30%;
 `;
 
-const CountryCard: React.FC<Props> = ({ name, capital, continent }) => {
-  //   const { removeProperty, addProperty } = usePropertyContext();
-  //   const { id, mainImage, price, agency, isAdded } = property;
+const CountryCard: React.FC<CountryProps> = ({
+  name,
+  capital,
+  chosenCountry,
+  continent,
+  emoji,
+  playerScore,
+  resetGame,
+  selectThreeCountries,
+  updateScore,
+}) => {
+  function selectCard(e: string) {
+    console.log(e, chosenCountry);
+
+    if (e !== chosenCountry) {
+      return resetGame();
+    }
+    selectThreeCountries();
+    updateScore();
+  }
+
   return (
-    <StyledCountryCard>
+    <StyledCountryCard
+      onClick={(e) => {
+        e.preventDefault();
+        selectCard(emoji);
+      }}
+    >
       <h3>
         <span>{name}</span>
       </h3>
@@ -32,6 +46,9 @@ const CountryCard: React.FC<Props> = ({ name, capital, continent }) => {
       </h6>
       <h6>
         Continent: <span>{continent.name}</span>
+      </h6>
+      <h6>
+        Continent: <span>{emoji}</span>
       </h6>
     </StyledCountryCard>
   );
