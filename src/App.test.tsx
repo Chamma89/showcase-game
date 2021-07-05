@@ -42,12 +42,16 @@ describe("App", () => {
       },
     },
   ];
-  it("Checks that question has rendered", async () => {
+
+  beforeEach(() => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <App />
       </MockedProvider>
     );
+  });
+
+  it("Checks that question has rendered", async () => {
     await waitFor(() => {
       expect(screen.getByText(/Who does this flag belong to/i)).toBeTruthy();
       expect(screen.getByText(/Palestine/i)).toBeTruthy();
@@ -55,11 +59,6 @@ describe("App", () => {
   });
 
   it("Checks if all 3 countries are rendered", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <App />
-      </MockedProvider>
-    );
     await waitFor(() => {
       mocks[0].result.data.countries.forEach((country) => {
         expect(screen.getByText(country.name)).toBeTruthy();
@@ -68,11 +67,6 @@ describe("App", () => {
   });
 
   it("Checks that one of the countries is the chosen country", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <App />
-      </MockedProvider>
-    );
     await waitFor(() => {
       const chosenCountry = screen.getByTestId("ChosenCountry");
       expect(["🇦🇺", "🇦🇪", "🇵🇸"]).toContain(chosenCountry.innerHTML);
@@ -80,11 +74,6 @@ describe("App", () => {
   });
 
   it("Check that count is zero on load", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <App />
-      </MockedProvider>
-    );
     await waitFor(() => {
       const score = screen.getByRole("score");
       expect(score.innerHTML).toEqual("0");
