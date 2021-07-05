@@ -1,35 +1,48 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 //import CountryCard from "./components/CountryCard";
 import App from "./App";
 import { LIST_COUNTRIES } from "./graphql/Queries";
 import { MockedProvider } from "@apollo/client/testing";
-import { client } from "../src/index";
 
 describe("App", () => {
-  it("renders passed in html", async () => {
-    const mocks = [
-      {
-        request: {
-          query: LIST_COUNTRIES,
-        },
-        result: {
-          data: {
-            countries: [
-              {
-                __typename: "Country",
-                name: "Australia",
-                capital: "Canberra",
-                code: "Au",
-                emoji: "Aus",
-                continent: { __typename: "Continent", name: "Australasia" },
-              },
-            ],
-          },
+  const mocks = [
+    {
+      request: {
+        query: LIST_COUNTRIES,
+      },
+      result: {
+        data: {
+          countries: [
+            {
+              __typename: "Country",
+              name: "Australia",
+              capital: "Canberra",
+              code: "AU",
+              emoji: "🇦🇺",
+              continent: { __typename: "Continent", name: "Oceania" },
+            },
+            {
+              __typename: "Country",
+              name: "Palestine",
+              capital: "Ramallah",
+              code: "PS",
+              emoji: "🇵🇸",
+              continent: { __typename: "Continent", name: "Asia" },
+            },
+            {
+              __typename: "Country",
+              name: "United Arab Emirates",
+              capital: "Abu Dhabi",
+              code: "AE",
+              emoji: "🇦🇪",
+              continent: { __typename: "Continent", name: "Asia" },
+            },
+          ],
         },
       },
-    ];
-
+    },
+  ];
+  it("Checks that question has rendered", async () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <App />
@@ -37,21 +50,44 @@ describe("App", () => {
     );
     await waitFor(() => {
       expect(screen.getByText(/Who does this flag belong to/i)).toBeTruthy();
+      expect(screen.getByText(/Palestine/i)).toBeTruthy();
     });
   });
-  // it("renders passed in html", () => {
-  //   const props = {
-  //     name: "Fouad",
-  //     capital: "Au",
-  //     chosenCountry: "Au",
-  //     continent: {
-  //       name: "Au",
-  //     },
-  //     emoji: "sd",
-  //     playerScore: 34,
-  //   };
-  //   render(<CountryCard {...props} />);
 
-  //   //expect(screen.getByText(/Who does this flag belong to/i)).toBeTruthy();
-  // });
+  it("Checks if all 3 countries are rendered", async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <App />
+      </MockedProvider>
+    );
+    await waitFor(() => {
+      mocks[0].result.data.countries.forEach((country) => {
+        expect(screen.getByText(country.name)).toBeTruthy();
+      });
+    });
+  });
+
+  it("Checks that one of the countries is the chosen country", async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <App />
+      </MockedProvider>
+    );
+    await waitFor(() => {
+      const chosenCountry = screen.getByTestId("ChosenCountry");
+      expect(["🇦🇺", "🇦🇪", "🇵🇸"]).toContain(chosenCountry.innerHTML);
+    });
+  });
+
+  it("Check that count is zero on load", async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <App />
+      </MockedProvider>
+    );
+    await waitFor(() => {
+      const score = screen.getByRole("score");
+      expect(score.innerHTML).toEqual("0");
+    });
+  });
 });

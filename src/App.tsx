@@ -53,8 +53,6 @@ function App() {
 
   const { loading, error, data } = useQuery(LIST_COUNTRIES, {
     onCompleted: (data) => {
-      console.log(data);
-
       setCountries(data.countries);
     },
   });
@@ -108,7 +106,7 @@ function App() {
           <div>
             <StyledQuestion>
               <h1>Who does this flag belong to?</h1>
-              <span>{chosenCountry}</span>
+              <span data-testid="ChosenCountry">{chosenCountry}</span>
             </StyledQuestion>
             <StyledCards>
               {threeCountries
@@ -129,7 +127,7 @@ function App() {
                 ))}
             </StyledCards>
             <h1>
-              Current score: <Score>{playerScore}</Score>
+              Current score: <Score role="score">{playerScore}</Score>
             </h1>
           </div>
         )}
