@@ -10,9 +10,6 @@ export const LIST_COUNTRIES = gql`
       continent {
         name
       }
-      languages {
-        name
-      }
     }
   }
 `;

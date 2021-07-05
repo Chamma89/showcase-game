@@ -22,8 +22,6 @@ const CountryCard: React.FC<CountryProps> = ({
   updateScore,
 }) => {
   function selectCard(e: string) {
-    console.log(e, chosenCountry);
-
     if (e !== chosenCountry) {
       return resetGame();
     }
@@ -46,9 +44,6 @@ const CountryCard: React.FC<CountryProps> = ({
       </h6>
       <h6>
         Continent: <span>{continent.name}</span>
-      </h6>
-      <h6>
-        Continent: <span>{emoji}</span>
       </h6>
     </StyledCountryCard>
   );

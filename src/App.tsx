@@ -1,4 +1,5 @@
 import "./App.css";
+import React from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { LIST_COUNTRIES } from "./graphql/Queries";
@@ -30,6 +31,11 @@ const StyledQuestion = styled.div`
   }
 `;
 
+const Score = styled.div`
+  color: green;
+  display: inline-block;
+`;
+
 const StyledCards = styled.div`
   display: flex;
   justify-content: space-between;
@@ -47,19 +53,25 @@ function App() {
 
   const { loading, error, data } = useQuery(LIST_COUNTRIES, {
     onCompleted: (data) => {
+      console.log(data);
+
       setCountries(data.countries);
     },
   });
 
   useEffect(() => {
     if (data) {
-      let randomizedCountries = [...countries];
-
-      randomizedCountries = randomizedCountries.sort(() => Math.random() - 0.5);
-
-      setRandomCountriesList(randomizedCountries);
+      startGame();
     }
   }, [countries]);
+
+  const startGame = () => {
+    let randomizedCountries = [...countries];
+
+    randomizedCountries = randomizedCountries.sort(() => Math.random() - 0.5);
+
+    setRandomCountriesList(randomizedCountries);
+  };
 
   useEffect(() => {
     selectThreeCountries();
@@ -80,6 +92,7 @@ function App() {
   };
 
   const resetGame = () => {
+    startGame();
     setPlayerScore(0);
   };
 
@@ -115,7 +128,9 @@ function App() {
                   />
                 ))}
             </StyledCards>
-            <h1>Current score: {playerScore}</h1>
+            <h1>
+              Current score: <Score>{playerScore}</Score>
+            </h1>
           </div>
         )}
       </header>
