@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from "@testing-library/react";
-//import CountryCard from "./components/CountryCard";
 import App from "./App";
 import { LIST_COUNTRIES } from "./graphql/Queries";
 import { MockedProvider } from "@apollo/client/testing";

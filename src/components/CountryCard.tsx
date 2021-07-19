@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { CountryProps } from "../App";
 
 const StyledCountryCard = styled.div`
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px 0 rgba(255, 255, 255, 0.2);
   display: inline-block;
   padding: 10px;
   transition: 0.3s;
@@ -36,15 +36,9 @@ const CountryCard: React.FC<CountryProps> = ({
         selectCard(emoji);
       }}
     >
-      <h3>
-        <span>{name}</span>
-      </h3>
-      <h6>
-        Capital: <span>{capital}</span>
-      </h6>
-      <h6>
-        Continent: <span>{continent.name}</span>
-      </h6>
+      <h3>{name}</h3>
+      <h6>Capital: {capital}</h6>
+      <h6>Continent: {continent.name}</h6>
     </StyledCountryCard>
   );
 };

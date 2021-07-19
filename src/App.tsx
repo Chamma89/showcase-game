@@ -1,7 +1,6 @@
 import "./App.css";
-import React from "react";
-import { useQuery, useMutation } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useQuery } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
 import { LIST_COUNTRIES } from "./graphql/Queries";
 import CountryCard from "./components/CountryCard";
 import styled from "styled-components";
@@ -39,6 +38,7 @@ const Score = styled.div`
 const StyledCards = styled.div`
   display: flex;
   justify-content: space-between;
+  height: 350px;
 `;
 
 function App() {
@@ -46,10 +46,22 @@ function App() {
   const [randomCountriesList, setRandomCountriesList] = useState<
     CountryProps[]
   >([]);
-  const [chosenCountry, setChosenCountry] = useState<string>("");
+  const [chosenCountry, setChosenCountry] = useState("");
   const [threeCountries, setThreeCountries] = useState<CountryProps[]>([]);
 
-  const [playerScore, setPlayerScore] = useState<number>(0);
+  const [playerScore, setPlayerScore] = useState(0);
+
+  const startGame = useCallback(() => {
+    let randomizedCountries = [...countries];
+
+    randomizedCountries = randomizedCountries.sort(() => Math.random() - 0.5);
+
+    setRandomCountriesList(randomizedCountries);
+  }, [countries]);
+
+  const selectThreeCountries = useCallback(() => {
+    setThreeCountries(randomCountriesList.splice(0, 3));
+  }, [randomCountriesList]);
 
   const { loading, error, data } = useQuery(LIST_COUNTRIES, {
     onCompleted: (data) => {
@@ -57,27 +69,17 @@ function App() {
     },
   });
 
+  console.log("Data ==>", data); // do we need an API call? or do we just save them in a JSON
+
   useEffect(() => {
     if (data) {
       startGame();
     }
-  }, [countries]);
-
-  const startGame = () => {
-    let randomizedCountries = [...countries];
-
-    randomizedCountries = randomizedCountries.sort(() => Math.random() - 0.5);
-
-    setRandomCountriesList(randomizedCountries);
-  };
+  }, [countries, data, startGame]);
 
   useEffect(() => {
     selectThreeCountries();
-  }, [randomCountriesList]);
-
-  const selectThreeCountries = () => {
-    setThreeCountries(randomCountriesList.splice(0, 3));
-  };
+  }, [randomCountriesList, selectThreeCountries]);
 
   useEffect(() => {
     if (threeCountries.length > 0) {
