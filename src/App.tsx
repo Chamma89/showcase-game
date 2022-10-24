@@ -1,14 +1,13 @@
 import "./App.css";
-import { useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
-import { LIST_COUNTRIES } from "./graphql/Queries";
 import CountryCard from "./components/CountryCard";
 import styled from "styled-components";
+import countriesList from "./countries.json";
 
 interface Continent {
   name: string;
 }
-export interface CountryProps {
+export interface CountryProps extends CountryInfoProps {
   name: string;
   capital: string;
   code?: string;
@@ -19,6 +18,14 @@ export interface CountryProps {
   selectThreeCountries: Function;
   updateScore: Function;
   resetGame: Function;
+}
+
+interface CountryInfoProps {
+  name: string;
+  capital: string;
+  code?: string;
+  emoji: string;
+  continent: Continent;
 }
 
 const StyledQuestion = styled.div`
@@ -42,13 +49,13 @@ const StyledCards = styled.div`
 `;
 
 function App() {
-  const [countries, setCountries] = useState<CountryProps[]>([]);
+  const data: CountryInfoProps[] = countriesList;
+  const [countries, setCountries] = useState<CountryInfoProps[]>([]);
   const [randomCountriesList, setRandomCountriesList] = useState<
-    CountryProps[]
+    CountryInfoProps[]
   >([]);
   const [chosenCountry, setChosenCountry] = useState("");
-  const [threeCountries, setThreeCountries] = useState<CountryProps[]>([]);
-
+  const [threeCountries, setThreeCountries] = useState<CountryInfoProps[]>([]);
   const [playerScore, setPlayerScore] = useState(0);
 
   const startGame = useCallback(() => {
@@ -63,19 +70,10 @@ function App() {
     setThreeCountries(randomCountriesList.splice(0, 3));
   }, [randomCountriesList]);
 
-  const { loading, error, data } = useQuery(LIST_COUNTRIES, {
-    onCompleted: (data) => {
-      setCountries(data.countries);
-    },
-  });
-
-  console.log("Data ==>", data); // do we need an API call? or do we just save them in a JSON
-
   useEffect(() => {
-    if (data) {
-      startGame();
-    }
-  }, [countries, data, startGame]);
+    setCountries(data);
+    startGame();
+  }, [startGame, data]);
 
   useEffect(() => {
     selectThreeCountries();
@@ -96,43 +94,36 @@ function App() {
     setPlayerScore(0);
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-
   return (
     <div className="App">
       <header className="App-header">
-        {loading ? (
-          <h1>Loading...</h1>
-        ) : (
-          <div>
-            <StyledQuestion>
-              <h1>Who does this flag belong to?</h1>
-              <span data-testid="ChosenCountry">{chosenCountry}</span>
-            </StyledQuestion>
-            <StyledCards>
-              {threeCountries
-                .sort(() => Math.random() - 0.5)
-                .map((country) => (
-                  <CountryCard
-                    key={country.code}
-                    name={country.name}
-                    capital={country.capital}
-                    chosenCountry={chosenCountry}
-                    continent={country.continent}
-                    emoji={country.emoji}
-                    playerScore={playerScore}
-                    resetGame={resetGame}
-                    selectThreeCountries={selectThreeCountries}
-                    updateScore={addToPlayerScore}
-                  />
-                ))}
-            </StyledCards>
-            <h1>
-              Current score: <Score role="score">{playerScore}</Score>
-            </h1>
-          </div>
-        )}
+        <div>
+          <StyledQuestion>
+            <h1>Who does this flag belong to?</h1>
+            <span data-testid="ChosenCountry">{chosenCountry}</span>
+          </StyledQuestion>
+          <StyledCards>
+            {threeCountries
+              .sort(() => Math.random() - 0.5)
+              .map((country) => (
+                <CountryCard
+                  key={country.code}
+                  name={country.name}
+                  capital={country.capital}
+                  chosenCountry={chosenCountry}
+                  continent={country.continent}
+                  emoji={country.emoji}
+                  playerScore={playerScore}
+                  resetGame={resetGame}
+                  selectThreeCountries={selectThreeCountries}
+                  updateScore={addToPlayerScore}
+                />
+              ))}
+          </StyledCards>
+          <h1>
+            Current score: <Score role="score">{playerScore}</Score>
+          </h1>
+        </div>
       </header>
     </div>
   );
