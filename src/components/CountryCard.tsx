@@ -38,7 +38,6 @@ const CountryCard: React.FC<CountryProps> = ({
   chosenCountry,
   continent,
   emoji,
-  playerScore,
   resetGame,
   selectThreeCountries,
   updateScore,
@@ -75,7 +74,7 @@ const CountryCard: React.FC<CountryProps> = ({
 
       {!spinCard && (
         <>
-          <h3>{name}</h3>
+          <h5>{name}</h5>
           <h6>Capital: {capital}</h6>
           <h6>Continent: {continent.name}</h6>
         </>
