@@ -38,7 +38,7 @@ const StyledQuestion = styled.div`
 `;
 
 const Score = styled.div`
-  color: green;
+  color: #47cf73;
   display: inline-block;
 `;
 
@@ -57,6 +57,7 @@ function App() {
   const [chosenCountry, setChosenCountry] = useState("");
   const [threeCountries, setThreeCountries] = useState<CountryInfoProps[]>([]);
   const [playerScore, setPlayerScore] = useState(0);
+  const bestScore = localStorage.getItem("bestScore") || 0;
 
   const startGame = useCallback(() => {
     let randomizedCountries = [...countries];
@@ -91,6 +92,8 @@ function App() {
 
   const resetGame = () => {
     startGame();
+    playerScore > Number(bestScore) &&
+      localStorage.setItem("bestScore", JSON.stringify(playerScore));
     setPlayerScore(0);
   };
 
@@ -122,6 +125,12 @@ function App() {
           </StyledCards>
           <h1>
             Current score: <Score role="score">{playerScore}</Score>
+          </h1>
+          <h1>
+            Best score🌟:{" "}
+            <Score role="score">
+              {playerScore > bestScore ? playerScore : bestScore}
+            </Score>
           </h1>
         </div>
       </header>
